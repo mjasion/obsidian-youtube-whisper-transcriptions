@@ -1,16 +1,23 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-youtube-whisper-transcription",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Transcribe YouTube videos using OpenAI Whisper API or download existing captions",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"update-vendor-deps": "node scripts/update-vendor-deps.js",
+		"update-vendor-deps:check": "node scripts/update-vendor-deps.js --check-only",
+		"update-vendor-deps:youtubei": "node scripts/update-vendor-deps.js youtubei.js"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["obsidian", "plugin", "youtube", "transcription", "whisper", "openai"],
+	"author": "mjasion",
 	"license": "MIT",
+	"dependencies": {
+		"openai": "^4.0.0",
+		"youtubei.js": "16.0.1"
+	},
 	"devDependencies": {
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "5.29.0",

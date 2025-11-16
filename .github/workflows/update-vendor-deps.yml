@@ -1,0 +1,97 @@
+name: Update Vendored Dependencies
+
+on:
+  # Allow manual trigger (RECOMMENDED)
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Specific package to update (or leave empty for all)'
+        required: false
+        type: string
+
+  # Check on PRs (comment only, don't auto-commit)
+  pull_request:
+    branches: [ master, main ]
+
+  # Optional: Run on push to main (as backup for schedule)
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'package.json'
+      - '.github/workflows/update-vendor-deps.yml'
+
+jobs:
+  check-vendor-updates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for commits
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for vendor updates
+        id: check
+        run: |
+          node scripts/update-vendor-deps.js --check-only > vendor-check.txt
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          cat vendor-check.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # On PRs: Comment if outdated
+      - name: Comment on PR if outdated
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `${{ steps.check.outputs.result }}`;
+            if (output.includes('->')) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## Vendored Dependency Updates Available\n\n\`\`\`\n${output}\n\`\`\`\n\nRun \`npm run update-vendor-deps\` to update.`
+              });
+            }
+
+      # On manual trigger or push: Check and report (don't auto-commit to main)
+      - name: Update vendored dependencies (check mode)
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+        run: |
+          # Only check, don't update yet
+          node scripts/update-vendor-deps.js --check-only > vendor-status.txt
+          cat vendor-status.txt
+
+          # Create issue if updates available (manual workflow only)
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if grep -q "->" vendor-status.txt; then
+              echo "Updates available - creating issue"
+              echo "UPDATES_AVAILABLE=true" >> $GITHUB_ENV
+            else
+              echo "No updates needed"
+            fi
+          fi
+
+      - name: Create issue for updates
+        if: env.UPDATES_AVAILABLE == 'true' && github.event_name == 'workflow_dispatch'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const status = fs.readFileSync('vendor-status.txt', 'utf8');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔄 Vendored Dependencies Updates Available',
+              body: `## Updates Available\n\n\`\`\`\n${status}\n\`\`\`\n\n### To Update\n\nRun locally:\n\`\`\`bash\nnpm run update-vendor-deps\ngit push\n\`\`\`\n\nOr manually trigger this workflow to create a PR.`,
+              labels: ['dependencies', 'maintenance']
+            });
