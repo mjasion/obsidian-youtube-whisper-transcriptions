@@ -1,8 +1,10 @@
-import { Notice, Plugin } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, YouTubeWhisperSettings, YouTubeWhisperSettingTab } from './settings';
+import { TranscriptionOrchestrator } from './commands/transcription-orchestrator';
 
 export default class YouTubeWhisperPlugin extends Plugin {
 	settings: YouTubeWhisperSettings;
+	orchestrator: TranscriptionOrchestrator;
 
 	async onload() {
 		console.log('Loading YouTube Whisper Transcription plugin');
@@ -10,12 +12,15 @@ export default class YouTubeWhisperPlugin extends Plugin {
 		// Load settings
 		await this.loadSettings();
 
+		// Initialize orchestrator
+		this.orchestrator = new TranscriptionOrchestrator(this.app, this.settings);
+
 		// Add settings tab
 		this.addSettingTab(new YouTubeWhisperSettingTab(this.app, this));
 
 		// Add ribbon icon
 		this.addRibbonIcon('video', 'Transcribe YouTube video', () => {
-			new Notice('YouTube transcription command - coming soon!');
+			this.transcribeYouTubeVideo();
 		});
 
 		// Add command
@@ -40,19 +45,18 @@ export default class YouTubeWhisperPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+
+		// Update orchestrator with new settings
+		if (this.orchestrator) {
+			this.orchestrator.updateSettings(this.settings);
+		}
 	}
 
 	async transcribeYouTubeVideo() {
-		// Placeholder for transcription functionality
-		new Notice('Transcription functionality coming soon!');
-
-		// TODO: Implement transcription workflow
-		// 1. Prompt for YouTube URL
-		// 2. Validate URL and extract video ID
-		// 3. Fetch video metadata
-		// 4. Ask user for transcription method (Whisper, YouTube, or Both)
-		// 5. Show cost estimate if enabled
-		// 6. Execute transcription
-		// 7. Save results to vault
+		try {
+			await this.orchestrator.startTranscription();
+		} catch (error) {
+			console.error('Error starting transcription:', error);
+		}
 	}
 }
