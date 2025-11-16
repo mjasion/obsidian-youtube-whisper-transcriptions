@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "youtube-whisper-transcription",
+	"name": "YouTube Whisper Transcription",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"description": "Transcribe YouTube videos using OpenAI Whisper API or download existing captions. Supports videos from minutes to hours with automatic chunking.",
+	"author": "mjasion",
+	"authorUrl": "https://github.com/mjasion",
+	"isDesktopOnly": true
 }
