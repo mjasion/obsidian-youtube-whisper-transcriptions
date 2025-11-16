@@ -167,9 +167,9 @@ Special characters are sanitized, and duplicates get numbered (e.g., `Video Titl
 
 ### Current Limitations
 
-1. **Audio Segmentation**: Videos with audio files >25MB require ffmpeg for chunking (not yet implemented)
+1. **Audio Segmentation**: Videos with audio files >25MB require segmented downloads (not yet implemented)
    - Workaround: Most videos under 2 hours work fine
-   - Future: Automatic ffmpeg-based segmentation
+   - Future: Automatic segmentation using YouTube.js native time-based downloads (no external dependencies required)
 
 2. **YouTube Caption Download**: Currently detects captions but full download implementation is simplified
    - Future: Complete caption track parsing with timing
@@ -178,7 +178,7 @@ Special characters are sanitized, and duplicates get numbered (e.g., `Video Titl
 
 ### Planned Features
 
-- Audio segmentation with ffmpeg for 8+ hour videos
+- Audio segmentation using YouTube.js native downloads for 8+ hour videos (cross-platform, no external binaries)
 - Batch transcription of multiple videos
 - Custom Whisper parameters (temperature, language hints)
 - Transcription editing interface
@@ -207,7 +207,7 @@ Built with long-term resilience in mind:
 
 ### "Audio file too large" error
 - Video is >25MB audio (usually >2 hours)
-- ffmpeg segmentation will be added in a future update
+- Native YouTube.js segmentation will be added in a future update (no external dependencies)
 
 ### Build fails with "Expected ';' but found 'with'"
 - Update esbuild to latest version: `npm install --save-dev esbuild@latest`

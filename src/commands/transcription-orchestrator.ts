@@ -170,10 +170,11 @@ export class TranscriptionOrchestrator {
 		let transcription: TranscriptionResult;
 
 		if (needsSegmentation) {
-			// TODO: Implement audio segmentation with ffmpeg
-			// For now, show error
+			// TODO: Implement audio segmentation using YouTube.js native time-based downloads
+			// Download audio in segments (15-min chunks) using YouTube.js range requests
+			// This works cross-platform without requiring ffmpeg binary
 			throw new Error(
-				'Audio file is too large for direct transcription. Audio segmentation with ffmpeg will be implemented in a future update. Maximum file size: 25MB.'
+				'Audio file is too large for direct transcription. Audio segmentation using native YouTube.js time-based downloads will be implemented in a future update. Maximum file size: 25MB.'
 			);
 		} else {
 			transcription = await whisperService.transcribe(audioPath, metadata.language, (progress) => {

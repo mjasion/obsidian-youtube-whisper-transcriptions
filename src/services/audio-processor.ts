@@ -129,7 +129,13 @@ export class AudioProcessor {
 
 	/**
 	 * Create segment metadata for processing
-	 * Since we're downloading full audio, we'll note where segments should be split
+	 *
+	 * Future implementation will use YouTube.js native time-based downloads:
+	 * - Download audio in segments using video.download() with range parameters
+	 * - Works cross-platform without external binaries (no ffmpeg required)
+	 * - Each segment is a separate HTTP range request (e.g., 0-900s, 900-1800s)
+	 *
+	 * For now, this creates a plan that will guide the YouTube.js download implementation.
 	 */
 	createSegmentPlan(
 		totalDurationSeconds: number,
