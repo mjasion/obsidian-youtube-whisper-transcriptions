@@ -1,8 +1,6 @@
 ---
-name: OpenSpec: Archive
 description: Archive a deployed OpenSpec change and update specs.
-category: OpenSpec
-tags: [openspec, archive]
+auto_execution_mode: 3
 ---
 <!-- OPENSPEC:START -->
 **Guardrails**

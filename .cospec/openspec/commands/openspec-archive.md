@@ -1,8 +1,6 @@
 ---
-name: OpenSpec: Archive
-description: Archive a deployed OpenSpec change and update specs.
-category: OpenSpec
-tags: [openspec, archive]
+description: "Archive a deployed OpenSpec change and update specs."
+argument-hint: change-id
 ---
 <!-- OPENSPEC:START -->
 **Guardrails**
